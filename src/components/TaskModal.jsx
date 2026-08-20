@@ -35,7 +35,6 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
   const [form, setForm] = useState({
     title: task.title,
     description: task.description ?? '',
-    status: task.status,
     priority: task.priority,
     dueDate: toDateInput(task.dueDate),
     assignedToId: task.assignedToId ?? '',
@@ -71,7 +70,8 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
       const payload = {
         title: form.title.trim(),
         description: form.description.trim() || null,
-        status: Number(form.status),
+        // El estado no se edita aquí: solo avanza con el botón único de la tarjeta en el tablero.
+        status: task.status,
         priority: Number(form.priority),
         dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
         assignedToId: form.assignedToId === '' ? null : Number(form.assignedToId),
@@ -198,11 +198,12 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
           </label>
 
           <div className="modal-row">
-            <label>Estado
-              <select value={form.status} onChange={update('status')} disabled={readOnly}>
-                {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-            </label>
+            <div>
+              <label>Estado</label>
+              <p className="status-readout">
+                {STATUS_OPTIONS.find((o) => o.value === task.status)?.label}
+              </p>
+            </div>
             <label>Prioridad
               <select value={form.priority} onChange={update('priority')} disabled={readOnly}>
                 {PRIORITY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
