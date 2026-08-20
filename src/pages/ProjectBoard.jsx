@@ -204,7 +204,6 @@ export default function ProjectBoard() {
                     <div key={task.id} className="task-card">
                       <div className="task-top">
                         <span className={`prio ${PRIORITY_CLASS[task.priority]}`}>{PRIORITY_LABEL[task.priority]}</span>
-                        <button className="link-btn" onClick={() => setSelectedTask(task)}>Ver</button>
                       </div>
                       <button className="task-title-btn" onClick={() => setSelectedTask(task)}>{task.title}</button>
                       <div className="task-meta">
@@ -213,10 +212,9 @@ export default function ProjectBoard() {
                         {task.attachmentCount > 0 && <span className="chip">Adj. {task.attachmentCount}</span>}
                       </div>
                       {task.dueDate && <p className="muted small">Vence: {new Date(task.dueDate).toLocaleDateString()}</p>}
-                      {canEdit && (
+                      {canEdit && col.key === STATUS.Todo && (
                         <div className="task-actions">
-                          {col.key !== STATUS.Todo && <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, col.key - 1)}>←</button>}
-                          {col.key !== STATUS.Done && <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, col.key + 1)}>→</button>}
+                          <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, STATUS.InProgress)}>Iniciar →</button>
                         </div>
                       )}
                     </div>
