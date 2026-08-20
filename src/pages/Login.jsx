@@ -25,21 +25,30 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-card">
-      <h1>Iniciar sesión</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Correo
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <label>Contraseña
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
-        {error && <p className="error">{error}</p>}
-        <button className="btn btn-primary" type="submit" disabled={loading}>
-          {loading ? 'Entrando…' : 'Entrar'}
-        </button>
-      </form>
-      <p className="muted">¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
+    <div className="auth-split">
+      <div className="auth-side">
+        <span className="auth-side-mark">Proyectos y Tareas</span>
+        <h1>Bienvenido de nuevo</h1>
+        <p>Organiza tus proyectos, coordina a tu equipo y da seguimiento a cada tarea con claridad.</p>
+      </div>
+      <div className="auth-form-panel">
+        <div className="auth-card">
+          <h2>Iniciar sesión</h2>
+          <form onSubmit={handleSubmit}>
+            <label>Correo
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </label>
+            <label>Contraseña
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+            {error && <p className="error">{error}</p>}
+            <button className="btn btn-primary" type="submit" disabled={loading}>
+              {loading ? 'Entrando…' : 'Entrar'}
+            </button>
+          </form>
+          <p className="muted">¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
+        </div>
+      </div>
     </div>
   );
 }

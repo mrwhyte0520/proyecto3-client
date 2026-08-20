@@ -133,90 +133,99 @@ export default function ProjectBoard() {
 
   return (
     <div className="container">
-      <Link to="/" className="muted">← Volver a proyectos</Link>
+      <Link to="/" className="muted back-link">← Volver a proyectos</Link>
 
-      {editingProject ? (
-        <form className="card create-form" onSubmit={handleSaveProject}>
-          <h3>Editar proyecto</h3>
-          <input value={projectForm.name} onChange={(e) => setProjectForm({ ...projectForm, name: e.target.value })} maxLength={150} required />
-          <input value={projectForm.description} onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })} maxLength={1000} placeholder="Descripción (opcional)" />
-          <div className="modal-actions-right">
-            <button type="button" className="btn btn-ghost" onClick={() => setEditingProject(false)}>Cancelar</button>
-            <button type="submit" className="btn btn-primary">Guardar</button>
+      <div className="page-split">
+        <aside className="page-aside">
+          <div className="card board-info">
+            {editingProject ? (
+              <form className="modal-form" onSubmit={handleSaveProject}>
+                <h3>Editar proyecto</h3>
+                <input value={projectForm.name} onChange={(e) => setProjectForm({ ...projectForm, name: e.target.value })} maxLength={150} required />
+                <input value={projectForm.description} onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })} maxLength={1000} placeholder="Descripción (opcional)" />
+                <div className="modal-actions-right">
+                  <button type="button" className="btn btn-ghost" onClick={() => setEditingProject(false)}>Cancelar</button>
+                  <button type="submit" className="btn btn-primary">Guardar</button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <h1>{project?.name}</h1>
+                <span className="role-badge">{project?.role}</span>
+                {project?.description && <p className="muted" style={{ marginTop: '0.7rem' }}>{project.description}</p>}
+                <div className="board-info-actions">
+                  <Link to={`/projects/${projectId}/members`} className="btn btn-ghost btn-sm">Miembros ({members.length})</Link>
+                  {canEdit && <button className="btn btn-ghost btn-sm" onClick={startEditProject}>Editar</button>}
+                </div>
+              </>
+            )}
           </div>
-        </form>
-      ) : (
-        <div className="board-header">
-          <div>
-            <h1>{project?.name} <span className="role-badge">{project?.role}</span></h1>
-            {project?.description && <p className="muted">{project.description}</p>}
+
+          <div className="card">
+            <h3>Filtros</h3>
+            <div className="filters">
+              <select value={filters.prioridad} onChange={(e) => setFilters((f) => ({ ...f, prioridad: e.target.value }))} className="filter-select">
+                <option value="">Prioridad: todas</option>
+                <option value={2}>Alta</option>
+                <option value={1}>Media</option>
+                <option value={0}>Baja</option>
+              </select>
+              <select value={filters.asignado} onChange={(e) => setFilters((f) => ({ ...f, asignado: e.target.value }))} className="filter-select">
+                <option value="">Asignado: todos</option>
+                {members.map((m) => <option key={m.userId} value={m.userId}>{m.displayName}</option>)}
+              </select>
+            </div>
           </div>
-          <div className="board-header-actions">
-            <Link to={`/projects/${projectId}/members`} className="btn btn-ghost btn-sm">Miembros ({members.length})</Link>
-            {canEdit && <button className="btn btn-ghost btn-sm" onClick={startEditProject}>Editar</button>}
+        </aside>
+
+        <div className="page-main">
+          {canEdit && (
+            <form className="card create-form row" onSubmit={handleCreate}>
+              <input placeholder="Nueva tarea…" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} required />
+              <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+                <option value={0}>Prioridad: Baja</option>
+                <option value={1}>Prioridad: Media</option>
+                <option value={2}>Prioridad: Alta</option>
+              </select>
+              <button className="btn btn-primary" type="submit" disabled={creating}>{creating ? 'Agregando…' : 'Agregar'}</button>
+            </form>
+          )}
+
+          {error && <p className="error">{error}</p>}
+
+          <div className="board">
+            {COLUMNS.map((col) => {
+              const items = tasks.filter((t) => t.status === col.key);
+              return (
+                <div key={col.key} className="column">
+                  <h3 className="column-title">{col.title} <span className="badge">{items.length}</span></h3>
+                  {items.length === 0 && <p className="muted small">Sin tareas</p>}
+                  {items.map((task) => (
+                    <div key={task.id} className="task-card">
+                      <div className="task-top">
+                        <span className={`prio ${PRIORITY_CLASS[task.priority]}`}>{PRIORITY_LABEL[task.priority]}</span>
+                        <button className="link-btn" onClick={() => setSelectedTask(task)}>Ver</button>
+                      </div>
+                      <button className="task-title-btn" onClick={() => setSelectedTask(task)}>{task.title}</button>
+                      <div className="task-meta">
+                        {task.assignedToName && <span className="chip">{task.assignedToName}</span>}
+                        {task.commentCount > 0 && <span className="chip">Com. {task.commentCount}</span>}
+                        {task.attachmentCount > 0 && <span className="chip">Adj. {task.attachmentCount}</span>}
+                      </div>
+                      {task.dueDate && <p className="muted small">Vence: {new Date(task.dueDate).toLocaleDateString()}</p>}
+                      {canEdit && (
+                        <div className="task-actions">
+                          {col.key !== STATUS.Todo && <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, col.key - 1)}>←</button>}
+                          {col.key !== STATUS.Done && <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, col.key + 1)}>→</button>}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
-
-      {canEdit && (
-        <form className="card create-form row" onSubmit={handleCreate}>
-          <input placeholder="Nueva tarea…" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} required />
-          <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-            <option value={0}>Prioridad: Baja</option>
-            <option value={1}>Prioridad: Media</option>
-            <option value={2}>Prioridad: Alta</option>
-          </select>
-          <button className="btn btn-primary" type="submit" disabled={creating}>{creating ? 'Agregando…' : 'Agregar'}</button>
-        </form>
-      )}
-
-      <div className="filters">
-        <span className="filter-label">Filtros:</span>
-        <select value={filters.prioridad} onChange={(e) => setFilters((f) => ({ ...f, prioridad: e.target.value }))} className="filter-select">
-          <option value="">Prioridad: todas</option>
-          <option value={2}>Alta</option>
-          <option value={1}>Media</option>
-          <option value={0}>Baja</option>
-        </select>
-        <select value={filters.asignado} onChange={(e) => setFilters((f) => ({ ...f, asignado: e.target.value }))} className="filter-select">
-          <option value="">Asignado: todos</option>
-          {members.map((m) => <option key={m.userId} value={m.userId}>{m.displayName}</option>)}
-        </select>
-      </div>
-
-      {error && <p className="error">{error}</p>}
-
-      <div className="board">
-        {COLUMNS.map((col) => {
-          const items = tasks.filter((t) => t.status === col.key);
-          return (
-            <div key={col.key} className="column">
-              <h3 className="column-title">{col.title} <span className="badge">{items.length}</span></h3>
-              {items.length === 0 && <p className="muted small">Sin tareas</p>}
-              {items.map((task) => (
-                <div key={task.id} className="task-card">
-                  <div className="task-top">
-                    <span className={`prio ${PRIORITY_CLASS[task.priority]}`}>{PRIORITY_LABEL[task.priority]}</span>
-                    <button className="link-btn" onClick={() => setSelectedTask(task)}>Ver</button>
-                  </div>
-                  <button className="task-title-btn" onClick={() => setSelectedTask(task)}>{task.title}</button>
-                  <div className="task-meta">
-                    {task.assignedToName && <span className="chip">{task.assignedToName}</span>}
-                    {task.commentCount > 0 && <span className="chip">Com. {task.commentCount}</span>}
-                    {task.attachmentCount > 0 && <span className="chip">Adj. {task.attachmentCount}</span>}
-                  </div>
-                  {task.dueDate && <p className="muted small">Vence: {new Date(task.dueDate).toLocaleDateString()}</p>}
-                  {canEdit && (
-                    <div className="task-actions">
-                      {col.key !== STATUS.Todo && <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, col.key - 1)}>←</button>}
-                      {col.key !== STATUS.Done && <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, col.key + 1)}>→</button>}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          );
-        })}
       </div>
 
       {selectedTask && (

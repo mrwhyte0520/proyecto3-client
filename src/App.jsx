@@ -18,10 +18,11 @@ function PublicOnly({ children }) {
 }
 
 export default function App() {
+  const { isAuthenticated } = useAuth();
   return (
-    <>
+    <div className={`app-shell${isAuthenticated ? '' : ' app-shell-public'}`}>
       <Navbar />
-      <main>
+      <main className={isAuthenticated ? 'content' : 'main-auth'}>
         <Routes>
           <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
           <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
@@ -32,6 +33,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-    </>
+    </div>
   );
 }

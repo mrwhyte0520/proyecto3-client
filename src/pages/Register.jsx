@@ -28,24 +28,33 @@ export default function Register() {
   }
 
   return (
-    <div className="auth-card">
-      <h1>Crear cuenta</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Nombre
-          <input type="text" value={form.displayName} onChange={update('displayName')} minLength={2} required />
-        </label>
-        <label>Correo
-          <input type="email" value={form.email} onChange={update('email')} required />
-        </label>
-        <label>Contraseña
-          <input type="password" value={form.password} onChange={update('password')} minLength={6} required />
-        </label>
-        {error && <p className="error">{error}</p>}
-        <button className="btn btn-primary" type="submit" disabled={loading}>
-          {loading ? 'Creando…' : 'Registrarme'}
-        </button>
-      </form>
-      <p className="muted">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+    <div className="auth-split">
+      <div className="auth-side">
+        <span className="auth-side-mark">Proyectos y Tareas</span>
+        <h1>Crea tu cuenta</h1>
+        <p>Regístrate para administrar proyectos colaborativos, tableros y tareas de tu equipo.</p>
+      </div>
+      <div className="auth-form-panel">
+        <div className="auth-card">
+          <h2>Crear cuenta</h2>
+          <form onSubmit={handleSubmit}>
+            <label>Nombre
+              <input type="text" value={form.displayName} onChange={update('displayName')} minLength={2} required />
+            </label>
+            <label>Correo
+              <input type="email" value={form.email} onChange={update('email')} required />
+            </label>
+            <label>Contraseña
+              <input type="password" value={form.password} onChange={update('password')} minLength={6} required />
+            </label>
+            {error && <p className="error">{error}</p>}
+            <button className="btn btn-primary" type="submit" disabled={loading}>
+              {loading ? 'Creando…' : 'Registrarme'}
+            </button>
+          </form>
+          <p className="muted">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+        </div>
+      </div>
     </div>
   );
 }

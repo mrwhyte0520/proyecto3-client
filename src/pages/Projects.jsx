@@ -69,38 +69,43 @@ export default function Projects() {
     <div className="container">
       <h1>Mis proyectos</h1>
 
-      <form className="card create-form" onSubmit={handleCreate}>
-        <h3>Nuevo proyecto</h3>
-        <input placeholder="Nombre del proyecto" value={name} onChange={(e) => setName(e.target.value)} maxLength={150} required />
-        <input placeholder="Descripción (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} />
-        <button className="btn btn-primary" type="submit" disabled={creating}>{creating ? 'Creando…' : 'Crear proyecto'}</button>
-      </form>
+      <div className="page-split">
+        <aside className="page-aside">
+          <form className="card create-form" onSubmit={handleCreate}>
+            <h3>Nuevo proyecto</h3>
+            <input placeholder="Nombre del proyecto" value={name} onChange={(e) => setName(e.target.value)} maxLength={150} required />
+            <input placeholder="Descripción (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} />
+            <button className="btn btn-primary" type="submit" disabled={creating}>{creating ? 'Creando…' : 'Crear proyecto'}</button>
+          </form>
+          {error && <p className="error">{error}</p>}
+        </aside>
 
-      {error && <p className="error">{error}</p>}
-
-      {loading ? (
-        <p className="muted">Cargando…</p>
-      ) : projects.length === 0 ? (
-        <p className="muted">Aún no tienes proyectos. ¡Crea el primero!</p>
-      ) : (
-        <div className="grid">
-          {projects.map((p) => (
-            <div key={p.id} className="card project-card">
-              <div className="project-head">
-                <h3>{p.name} <span className="role-badge">{p.role}</span></h3>
-                {p.role === 'Owner' && (
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p)}>Eliminar</button>
-                )}
-              </div>
-              {p.description && <p className="muted">{p.description}</p>}
-              <div className="project-foot">
-                <span className="badge">{p.taskCount} tarea(s)</span>
-                <Link to={`/projects/${p.id}`} className="btn btn-secondary btn-sm">Abrir tablero →</Link>
-              </div>
+        <div className="page-main">
+          {loading ? (
+            <p className="muted">Cargando…</p>
+          ) : projects.length === 0 ? (
+            <p className="muted">Aún no tienes proyectos. ¡Crea el primero!</p>
+          ) : (
+            <div className="grid">
+              {projects.map((p) => (
+                <div key={p.id} className="card project-card">
+                  <div className="project-head">
+                    <h3>{p.name} <span className="role-badge">{p.role}</span></h3>
+                    {p.role === 'Owner' && (
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p)}>Eliminar</button>
+                    )}
+                  </div>
+                  {p.description && <p className="muted">{p.description}</p>}
+                  <div className="project-foot">
+                    <span className="badge">{p.taskCount} tarea(s)</span>
+                    <Link to={`/projects/${p.id}`} className="btn btn-secondary btn-sm">Abrir tablero →</Link>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
