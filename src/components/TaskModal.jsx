@@ -164,7 +164,10 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
     }
   }
 
-  const readOnly = !canEdit;
+  // Solo se puede editar mientras la tarea está en "Por hacer"; una vez en
+  // progreso o terminada, el detalle queda en solo lectura y el avance de
+  // estado se hace con el botón rápido de la tarjeta en el tablero.
+  const readOnly = !canEdit || task.status !== 0;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -173,6 +176,10 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
           <h2>Detalle de la tarea</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Cerrar">✕</button>
         </div>
+
+        {canEdit && task.status !== 0 && (
+          <p className="muted small">Esta tarea ya no se puede editar: solo las tareas en "Por hacer" son editables.</p>
+        )}
 
         <form onSubmit={handleSave} className="modal-form">
           <label>Título

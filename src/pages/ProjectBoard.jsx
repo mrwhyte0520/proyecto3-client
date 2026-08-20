@@ -217,6 +217,11 @@ export default function ProjectBoard() {
                           <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, STATUS.InProgress)}>Iniciar →</button>
                         </div>
                       )}
+                      {canEdit && col.key === STATUS.InProgress && (
+                        <div className="task-actions">
+                          <button className="btn btn-ghost btn-sm" onClick={() => moveTask(task, STATUS.Done)}>Hecho →</button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
