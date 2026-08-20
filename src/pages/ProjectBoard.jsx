@@ -26,9 +26,14 @@ export default function ProjectBoard() {
   const [error, setError] = useState('');
 
   // Nueva tarea
-  const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState(1);
+  const [newTask, setNewTask] = useState({
+    title: '', description: '', priority: 1, dueDate: '', assignedToId: '',
+  });
   const [creating, setCreating] = useState(false);
+
+  function updateNewTask(field) {
+    return (e) => setNewTask((prev) => ({ ...prev, [field]: e.target.value }));
+  }
 
   // Filtros (server-side)
   const [filters, setFilters] = useState({ prioridad: '', asignado: '' });
@@ -77,17 +82,22 @@ export default function ProjectBoard() {
 
   async function handleCreate(e) {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!newTask.title.trim()) return;
     setCreating(true);
     setError('');
     try {
-      const created = await createTask(projectId, { title: title.trim(), priority: Number(priority) });
+      const created = await createTask(projectId, {
+        title: newTask.title.trim(),
+        description: newTask.description.trim() || null,
+        priority: Number(newTask.priority),
+        dueDate: newTask.dueDate ? new Date(newTask.dueDate).toISOString() : null,
+        assignedToId: newTask.assignedToId === '' ? null : Number(newTask.assignedToId),
+      });
       // Solo lo mostramos si pasa el filtro actual de prioridad.
       if (filters.prioridad === '' || Number(filters.prioridad) === created.priority) {
         setTasks((prev) => [...prev, created]);
       }
-      setTitle('');
-      setPriority(1);
+      setNewTask({ title: '', description: '', priority: 1, dueDate: '', assignedToId: '' });
     } catch (err) {
       setError(getErrorMessage(err, 'No se pudo crear la tarea.'));
     } finally {
@@ -180,14 +190,43 @@ export default function ProjectBoard() {
 
         <div className="page-main">
           {canEdit && (
-            <form className="card create-form row" onSubmit={handleCreate}>
-              <input placeholder="Nueva tarea…" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} required />
-              <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-                <option value={0}>Prioridad: Baja</option>
-                <option value={1}>Prioridad: Media</option>
-                <option value={2}>Prioridad: Alta</option>
-              </select>
-              <button className="btn btn-primary" type="submit" disabled={creating}>{creating ? 'Agregando…' : 'Agregar'}</button>
+            <form className="card create-form" onSubmit={handleCreate}>
+              <h3>Nueva tarea</h3>
+              <input
+                placeholder="Título de la tarea"
+                value={newTask.title}
+                onChange={updateNewTask('title')}
+                maxLength={200}
+                required
+              />
+              <textarea
+                placeholder="Descripción (opcional)"
+                value={newTask.description}
+                onChange={updateNewTask('description')}
+                maxLength={2000}
+                rows={2}
+              />
+              <div className="modal-row">
+                <label>Prioridad
+                  <select value={newTask.priority} onChange={updateNewTask('priority')}>
+                    <option value={0}>Baja</option>
+                    <option value={1}>Media</option>
+                    <option value={2}>Alta</option>
+                  </select>
+                </label>
+                <label>Vencimiento
+                  <input type="date" value={newTask.dueDate} onChange={updateNewTask('dueDate')} />
+                </label>
+              </div>
+              <label>Asignado a
+                <select value={newTask.assignedToId} onChange={updateNewTask('assignedToId')}>
+                  <option value="">— Sin asignar —</option>
+                  {members.map((m) => <option key={m.userId} value={m.userId}>{m.displayName}</option>)}
+                </select>
+              </label>
+              <button className="btn btn-primary" type="submit" disabled={creating}>
+                {creating ? 'Agregando…' : 'Agregar tarea'}
+              </button>
             </form>
           )}
 
