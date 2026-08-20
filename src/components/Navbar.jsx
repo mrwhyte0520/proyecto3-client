@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <Link to="/" className="brand">📋 Gestor de Tareas</Link>
+      <Link to="/" className="brand">Gestor de Tareas</Link>
       {isAuthenticated && (
         <nav className="nav-right">
           <Link to="/profile" className="muted">Hola, {user.displayName}</Link>

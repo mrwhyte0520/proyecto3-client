@@ -202,8 +202,8 @@ export default function ProjectBoard() {
                   <button className="task-title-btn" onClick={() => setSelectedTask(task)}>{task.title}</button>
                   <div className="task-meta">
                     {task.assignedToName && <span className="chip">{task.assignedToName}</span>}
-                    {task.commentCount > 0 && <span className="chip">💬 {task.commentCount}</span>}
-                    {task.attachmentCount > 0 && <span className="chip">📎 {task.attachmentCount}</span>}
+                    {task.commentCount > 0 && <span className="chip">Com. {task.commentCount}</span>}
+                    {task.attachmentCount > 0 && <span className="chip">Adj. {task.attachmentCount}</span>}
                   </div>
                   {task.dueDate && <p className="muted small">Vence: {new Date(task.dueDate).toLocaleDateString()}</p>}
                   {canEdit && (
