@@ -258,7 +258,7 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
                 <button type="button" className="link-btn" onClick={() => handleDownload(a)}>{a.fileName}</button>
                 <span className="muted small">{formatSize(a.sizeBytes)}</span>
                 {(a.uploadedById === currentUserId || canEdit) && (
-                  <button type="button" className="link-danger" onClick={() => handleDeleteAttachment(a.id)}>✕</button>
+                  <button type="button" className="link-danger" aria-label={`Eliminar adjunto ${a.fileName}`} onClick={() => handleDeleteAttachment(a.id)}>✕</button>
                 )}
               </li>
             ))}
@@ -276,7 +276,7 @@ export default function TaskModal({ task, members, canEdit, currentUserId, onClo
                   <strong>{c.userName}</strong>
                   <span className="muted small">{new Date(c.createdAt).toLocaleString()}</span>
                   {c.userId === currentUserId && (
-                    <button type="button" className="link-danger" onClick={() => handleDeleteComment(c.id)}>✕</button>
+                    <button type="button" className="link-danger" aria-label="Eliminar comentario" onClick={() => handleDeleteComment(c.id)}>✕</button>
                   )}
                 </div>
                 <p className="comment-body">{c.content}</p>
